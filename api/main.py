@@ -29,9 +29,15 @@ cors_origins = os.environ.get("CORS_ORIGINS", "http://localhost:3000,https://cla
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_methods=["POST"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
+
+
+@app.get("/")
+def health():
+    return {"status": "ok", "service": "Zero-Shot Sınıflandırma API"}
 
 
 @app.post("/api/classify", response_model=ClassifyResponse)
