@@ -4,23 +4,34 @@ import { useState } from "react";
 import TextInput from "@/components/TextInput";
 import CategoryManager from "@/components/CategoryManager";
 import ResultsTable from "@/components/ResultsTable";
+import PresetSelector from "@/components/PresetSelector";
 import { classify, ClassificationResult } from "@/lib/api";
-import { exportResultsAsJson } from "@/lib/utils";
-
-const DEFAULT_CATEGORIES = [
-  "Lojistik ve Kargo",
-  "Ürün Kalitesi ve Performans",
-  "Müşteri Hizmetleri ve Destek",
-];
+import { exportResultsAsJson, parseTexts } from "@/lib/utils";
+import { Preset } from "@/lib/presets";
 
 export default function Home() {
-  const [texts, setTexts] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [rawText, setRawText] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [results, setResults] = useState<ClassificationResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const texts = parseTexts(rawText);
   const isDisabled = texts.length === 0 || categories.length === 0;
+
+  function handlePresetSelect(preset: Preset) {
+    setRawText(preset.texts.join("\n"));
+    setCategories(preset.categories);
+    setResults([]);
+    setError(null);
+  }
+
+  function handleReset() {
+    setRawText("");
+    setCategories([]);
+    setResults([]);
+    setError(null);
+  }
 
   async function handleClassify() {
     setLoading(true);
@@ -43,7 +54,13 @@ export default function Home() {
           Zero-Shot Metin Sınıflandırma
         </h1>
 
-        <TextInput texts={texts} onTextsChange={setTexts} />
+        <PresetSelector onSelect={handlePresetSelect} onReset={handleReset} />
+
+        <TextInput
+          rawText={rawText}
+          textCount={texts.length}
+          onRawTextChange={setRawText}
+        />
 
         <CategoryManager
           categories={categories}
