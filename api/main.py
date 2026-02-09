@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Zero-Shot Sınıflandırma API", lifespan=lifespan)
 
-cors_origins = os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
+cors_origins = os.environ.get("CORS_ORIGINS", "http://localhost:3000,https://class.kodleon.com").split(",")
 
 app.add_middleware(
     CORSMiddleware,
