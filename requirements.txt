@@ -1,0 +1,9 @@
+openai
+scikit-learn
+numpy
+pytest
+hypothesis
+fastapi
+uvicorn
+httpx
+python-dotenv

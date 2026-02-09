@@ -1,0 +1,9 @@
+frontend/
+.kiro/
+.vscode/
+.git/
+__pycache__/
+*.pyc
+.env
+tests/
+*.md
