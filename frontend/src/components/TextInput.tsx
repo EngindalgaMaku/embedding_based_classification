@@ -1,7 +1,5 @@
 "use client";
 
-import { parseTexts } from "@/lib/utils";
-
 interface TextInputProps {
   rawText: string;
   textCount: number;
@@ -9,26 +7,24 @@ interface TextInputProps {
 }
 
 export default function TextInput({ rawText, textCount, onRawTextChange }: TextInputProps) {
-  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    onRawTextChange(e.target.value);
-  }
-
   return (
     <div>
-      <label htmlFor="text-input" className="block text-sm font-medium mb-2">
-        Metinler
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label htmlFor="text-input" className="text-sm font-semibold text-slate-700">
+          Metinler
+        </label>
+        <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+          {textCount} metin
+        </span>
+      </div>
       <textarea
         id="text-input"
-        rows={6}
+        rows={8}
         value={rawText}
-        onChange={handleChange}
+        onChange={(e) => onRawTextChange(e.target.value)}
         placeholder="Her satıra bir metin girin..."
-        className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
       />
-      <p className="mt-1 text-xs text-gray-500">
-        {textCount} metin girildi
-      </p>
     </div>
   );
 }

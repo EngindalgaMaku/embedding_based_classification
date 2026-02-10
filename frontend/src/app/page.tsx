@@ -48,59 +48,69 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="mx-auto max-w-3xl space-y-8">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Zero-Shot Metin Sınıflandırma
-        </h1>
-
-        <PresetSelector onSelect={handlePresetSelect} onReset={handleReset} />
-
-        <TextInput
-          rawText={rawText}
-          textCount={texts.length}
-          onRawTextChange={setRawText}
-        />
-
-        <CategoryManager
-          categories={categories}
-          onCategoriesChange={setCategories}
-        />
-
-        <button
-          type="button"
-          onClick={handleClassify}
-          disabled={isDisabled || loading}
-          className="rounded bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Sınıflandırılıyor..." : "Sınıflandır"}
-        </button>
-
-        {loading && (
-          <p role="status" className="text-sm text-gray-500">
-            Yükleniyor...
-          </p>
-        )}
-
-        {error && (
-          <p role="alert" className="text-sm text-red-600">
-            {error}
-          </p>
-        )}
-
-        {results.length > 0 && (
-          <div className="space-y-4">
-            <ResultsTable results={results} />
-            <button
-              type="button"
-              onClick={() => exportResultsAsJson(results)}
-              className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-            >
-              JSON İndir
-            </button>
-          </div>
-        )}
+    <div className="mx-auto max-w-4xl px-4 py-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-800">Zero-Shot Metin Sınıflandırma</h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Metinlerinizi özel kategorilere göre otomatik sınıflandırın
+        </p>
       </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-5">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <PresetSelector onSelect={handlePresetSelect} onReset={handleReset} />
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <TextInput rawText={rawText} textCount={texts.length} onRawTextChange={setRawText} />
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <CategoryManager categories={categories} onCategoriesChange={setCategories} />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleClassify}
+            disabled={isDisabled || loading}
+            className="w-full rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Sınıflandırılıyor...
+              </span>
+            ) : "Sınıflandır"}
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="mt-6 rounded-xl bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
+      {results.length > 0 && (
+        <div className="mt-8 space-y-4">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <ResultsTable results={results} />
+          </div>
+          <button
+            type="button"
+            onClick={() => exportResultsAsJson(results)}
+            className="rounded-lg bg-slate-800 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-900 transition-colors"
+          >
+            JSON İndir
+          </button>
+        </div>
+      )}
     </div>
   );
 }

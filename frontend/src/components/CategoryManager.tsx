@@ -7,10 +7,7 @@ interface CategoryManagerProps {
   onCategoriesChange: (categories: string[]) => void;
 }
 
-export default function CategoryManager({
-  categories,
-  onCategoriesChange,
-}: CategoryManagerProps) {
+export default function CategoryManager({ categories, onCategoriesChange }: CategoryManagerProps) {
   const [inputValue, setInputValue] = useState("");
 
   function handleAdd() {
@@ -33,7 +30,7 @@ export default function CategoryManager({
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-2">Kategoriler</label>
+      <label className="block text-sm font-semibold text-slate-700 mb-2">Kategoriler</label>
       <div className="flex gap-2 mb-3">
         <input
           type="text"
@@ -41,35 +38,37 @@ export default function CategoryManager({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Kategori adı girin"
-          className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         />
         <button
           type="button"
           onClick={handleAdd}
           disabled={!inputValue.trim()}
-          className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           Ekle
         </button>
       </div>
-      <ul className="space-y-1">
-        {categories.map((category, index) => (
-          <li
-            key={index}
-            className="flex items-center justify-between rounded border border-gray-200 px-3 py-2 text-sm"
-          >
-            <span>{category}</span>
-            <button
-              type="button"
-              onClick={() => handleRemove(index)}
-              aria-label={`${category} kategorisini sil`}
-              className="text-red-500 hover:text-red-700 text-sm"
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
             >
-              Sil
-            </button>
-          </li>
-        ))}
-      </ul>
+              {category}
+              <button
+                type="button"
+                onClick={() => handleRemove(index)}
+                aria-label={`${category} kategorisini sil`}
+                className="text-indigo-400 hover:text-red-500 transition-colors"
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
