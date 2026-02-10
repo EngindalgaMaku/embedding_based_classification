@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/", label: "Sınıflandırma" },
-  { href: "/kvkk", label: "KVKK Kontrol" },
+  { href: "/filter", label: "İçerik Filtreleme" },
 ];
 
 export default function Navbar() {

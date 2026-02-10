@@ -39,3 +39,49 @@ export async function classify(request: ClassifyRequest): Promise<ClassifyRespon
     clearTimeout(timeoutId);
   }
 }
+
+export interface FilterRequest {
+  texts: string[];
+  filters: string[];
+}
+
+export interface FilterMatch {
+  filter_name: string;
+  score: number;
+  matched: boolean;
+}
+
+export interface FilterResultItem {
+  text: string;
+  matches: FilterMatch[];
+  is_flagged: boolean;
+}
+
+export interface FilterResponse {
+  results: FilterResultItem[];
+}
+
+export async function filterContent(request: FilterRequest): Promise<FilterResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120000);
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/filter`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Filtreleme başarısız oldu");
+    }
+    return response.json();
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("İstek zaman aşımına uğradı. Lütfen daha az metin ile tekrar deneyin.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
