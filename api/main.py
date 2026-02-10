@@ -64,15 +64,30 @@ def classify(request: ClassifyRequest):
 
 @app.post("/api/filter", response_model=FilterResponse)
 def filter_content(request: FilterRequest):
-    """Her metin için her filtre kategorisini ayrı ayrı kontrol eder."""
+    """Her metin için her filtre kategorisini ayrı ayrı kontrol eder.
+    
+    Her filtre için metin embedding'ini hem filtre hem de karşıt (temiz) referansa
+    karşı kontrol eder. Filtre skoru ile temiz skor arasındaki fark belirli bir
+    eşiği aşarsa metin o filtre için bayraklanır.
+    """
     try:
-        # Tüm metinlerin ve filtre adlarının embedding'lerini toplu al
-        all_texts = request.texts + request.filters + ["Temiz ve zararsız içerik"]
+        MATCH_THRESHOLD = 0.02  # Filtre skoru temiz skordan en az bu kadar yüksek olmalı
+
+        # Her filtre için detaylı açıklama oluştur (embedding kalitesini artırır)
+        filter_descriptions = []
+        clean_descriptions = []
+        for f in request.filters:
+            filter_descriptions.append(f"Bu metin {f} içermektedir")
+            clean_descriptions.append(f"Bu metin {f} içermemektedir, temiz ve zararsız bir içeriktir")
+
+        all_texts = request.texts + filter_descriptions + clean_descriptions
         all_embeddings = embedding_client.get_embeddings_batch(all_texts)
 
-        text_embeddings = all_embeddings[: len(request.texts)]
-        filter_embeddings = all_embeddings[len(request.texts) : len(request.texts) + len(request.filters)]
-        clean_embedding = all_embeddings[-1]
+        n_texts = len(request.texts)
+        n_filters = len(request.filters)
+        text_embeddings = all_embeddings[:n_texts]
+        filter_embeddings = all_embeddings[n_texts:n_texts + n_filters]
+        clean_embeddings = all_embeddings[n_texts + n_filters:]
 
         from src.similarity import SimilarityCalculator
 
@@ -80,10 +95,11 @@ def filter_content(request: FilterRequest):
         for text, text_emb in zip(request.texts, text_embeddings):
             matches = []
             is_flagged = False
-            for filter_name, filter_emb in zip(request.filters, filter_embeddings):
+            for i, (filter_name, filter_emb) in enumerate(zip(request.filters, filter_embeddings)):
                 filter_score = SimilarityCalculator.cosine_similarity(text_emb, filter_emb)
-                clean_score = SimilarityCalculator.cosine_similarity(text_emb, clean_embedding)
-                matched = filter_score > clean_score
+                clean_score = SimilarityCalculator.cosine_similarity(text_emb, clean_embeddings[i])
+                diff = filter_score - clean_score
+                matched = diff > MATCH_THRESHOLD
                 if matched:
                     is_flagged = True
                 matches.append(FilterMatch(

@@ -5,9 +5,9 @@ import { filterContent, FilterResultItem } from "@/lib/api";
 import { formatScore } from "@/lib/utils";
 
 const DEFAULT_FILTERS = [
-  "Kişisel bilgi ve özel veri",
-  "Küfür, hakaret ve şiddet içeriği",
-  "Siyasi propaganda ve siyasi içerik",
+  "Kişisel bilgi, kimlik numarası, telefon, adres, IBAN, isim-soyisim",
+  "Küfür, hakaret, tehdit, şiddet içeren ifadeler",
+  "Siyasi propaganda, parti taraftarlığı, siyasi söylem",
 ];
 
 const EXAMPLE_TEXTS = [
